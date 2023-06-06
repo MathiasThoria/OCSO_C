@@ -1,0 +1,25 @@
+Lista de hilos: Puedes utilizar el comando info threads (abreviado como info t) 
+para obtener una lista de todos los hilos en ejecución en el programa. 
+Esto te mostrará el ID del hilo, el estado actual y la ubicación actual de ejecución de cada hilo.
+
+Cambiar de hilo: Puedes cambiar de hilo activo utilizando el comando thread 
+<ID_del_hilo> (abreviado como t <ID_del_hilo>). Esto te permitirá cambiar el
+ contexto de depuración para examinar y depurar un hilo específico.
+
+Backtrace por hilo: Puedes obtener una backtrace (bt) para un hilo específico 
+utilizando el comando thread <ID_del_hilo> bt. Esto mostrará la pila de llamadas 
+del hilo seleccionado y te permitirá analizar su flujo de ejecución.
+
+Seguimiento de variables por hilo: Puedes hacer un seguimiento de las variables 
+específicas en un hilo utilizando el comando thread <ID_del_hilo> watch <nombre_de_variable>. 
+Esto establecerá un punto de observación en la variable seleccionada para el hilo seleccionado, 
+lo que pausará la ejecución cuando el valor de la variable cambie.
+
+Puntos de interrupción por hilo: Puedes establecer puntos de interrupción 
+condicionales en código específico para que solo se activen cuando se cumplan
+ ciertas condiciones en un hilo específico. Puedes utilizar la sintaxis break
+  <ubicación> if <condición> thread <ID_del_hilo> para establecer un punto de interrupción condicional por hilo.
+
+Excluir hilos: Puedes excluir ciertos hilos de la depuración utilizando el 
+comando thread <ID_del_hilo> ignore. Esto permitirá que otros hilos continúen
+ ejecutándose sin interrupciones mientras te enfocas en depurar un hilo específico.

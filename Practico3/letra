@@ -1,0 +1,65 @@
+Ejercicio 1
+
+Sea un proceso que muestra ráfagas de 100 signos de + y otro que muestra ráfagas de 100 signos de - (cada proceso muestra varias ráfagas de signos de + y -). En cada proceso se ejecutan varias ráfagas de signos. Construya una solución donde las ráfagas de 100 signos se intercalen (por ejemplo, 80 +, 20 -, 15 +, 75 -… y así varias ráfagas) y otra en la cual cada ráfaga de 100 signos no se intercale.
+
+ 
+
+Ejercicio 2
+
+Sea una variable de tipo entero. Un proceso modifica el valor de la variable de alguna forma (por ejemplo multiplicándola por un valor y sumando otro), en tanto que otro proceso muestra el valor de la variable si el valor es par. Construya una solución teniendo en cuenta que las operaciones anteriores se intercalan con esperas que simulan otras acciones.
+
+ 
+
+Ejercicio 3
+
+Sea un conjunto de 20 productos donde cada uno tiene una masa expresada en gramos (cada producto tiene una masa entre 50 y 100 gramos). Un sistema toma de a uno los productos y los coloca en una balanza, luego realiza un testeo que le consume tiempo y reitera el proceso. La operación anterior se repite hasta que en la balanza la masa total llega a los 1000 gramos. Modele y resuelva el problema anterior.
+
+ 
+
+Ejercicio 4
+
+Sea un sistema que genera dos números al azar, siempre de a pares. Otro sistema muestra su suma y
+ un tercero su resta. Cada uno de los procesos anteriores muestra los números y el resultado.
+  No necesariamente se suman y restan todos los números, pudiendo generarse pares de números sobre los que no se
+   opera. Sin embargo, no puede pasar que se generen dos números y se muestre la suma o resta de
+    otros generados previamente. Los procesos hacen otras operaciones también.
+
+ 
+
+Ejercicio 5
+
+Sea un sistema de control de coordenadas, el cual recibe y almacena las mismas. El programa recibe dos coordenadas mediante una operación no atómica (no es relevante cómo es la asignación de las coordenadas, pudiendo ser valores constantes). Las coordenadas son siempre distintas de 0, o lo que es lo mismo, 0 indica que no hay coordenadas. Las coordenadas se actualizan cada poco tiempo, pero siempre las dos a la vez. Otro sistema toma esas coordenadas y las muestra en pantalla, si es que son válidas (distintas de 0). El primer sistema genera un total de 500 pares de coordenadas, el segundo muestra un total de 10 pares de coordenadas. Es posible que se generen varios pares de coordenadas que no resulten desplegadas por pantalla o que incluso se duplique un mismo par de coordenadas. Construya una solución en la cual no es posible generar nuevas coordenadas muestras se están generando otras. Asuma que se la restricción anterior se elimina, ¿cambia la solución?, justifique.
+
+ 
+
+Ejercicio 6
+
+Sea un sistema de empaque de golosinas de varios sabores: frutilla, naranja y menta. Cada uno de los envases tiene capacidad para 200 pastillas, en las cuales se mezclan los distintos sabores. Un sistema carga las pastillas de frutilla, otro las de naranja y un tercero las de menta. Cuando el envase está lleno las máquinas de envasado y producción detienen la producción. Modelar y resolver el problema teniendo en cuenta que los envases pueden modelarse como vectores, las pastilla de frutilla cargando un 1, las de naranja un 2 y las de menta un 3. Mostrar cómo se va completando el envase.
+
+ 
+
+ 
+
+NOTAS:
+
+sem_unlink(semaforo) se usa para borrar un semáforo,
+
+wait() hace que el proceso padre espere a que los hijos finalicen y luego finaliza. Por tanto podemos poner un wait() al final de cada padre (recordar que podemos tener varios procesos que son padres unos de otros) y luego de borrar el semáforo con sem_unlink(…). Ejemplo:
+
+i=fork()
+
+if (i>0){
+
+            …
+
+            …
+
+            wait();
+
+sem_unlink(…)}
+
+else {
+
+            …
+
+            …}

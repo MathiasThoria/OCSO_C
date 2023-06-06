@@ -1,0 +1,193 @@
+http://es.tldp.org/COMO-INSFLUG/COMOs/Bash-Prompt-Como/Bash-Prompt-Como-5.html
+
+5. Secuencias de escape ANSI: colores y movimientos del cursor
+5.1 Colores
+Como se mencionó antes, las secuencias escape de caracteres no imprimibles tienen que encerrarse entre \[\033[ y \]. Para las secuencias de escape de color, también deben aparecer, seguidos además de una m minúscula.
+
+Si se prueba uno de los prompts siguientes en una xterm y resulta que no se ven los colores nombrados, compruebe su ~/.Xdefaults (y posiblemente sus hermanos) y busque líneas como XTerm*Foreground: BlanchedAlmond. Esto puede comentarse colocando un ! delante. Por supuesto, depende de qué emulador de terminal esté usando. Este es el lugar más probable en el que los colores de su terminal pueden ser redefinidos.
+
+Para incluir texto azul en el prompt
+
+       PS1="\[\033[34m\][\$(date +%H%M)][\u@\h:\w]$ "
+El problema con este prompt es que el color azul que comienza con el código 34 no se retorna nunca al color habitual, por lo que cualquier texto que se teclee después del prompt será del mismo color que el prompt. Este es también un azul oscuro, así que combinarlo con el código de negrita puede resultar útil:
+
+       PS1="\[\033[1;34m\][\$(date +%H%M)][\u@\h:\w]$\[\033[0m\] "
+Ahora el prompt es azul claro, y termina cambiando el color de nuevo a �nada� (el color que se tenía previamente de primer plano)
+
+Aquí está el resto de equivalencias de colores:
+
+       Negro       0;30     Gris oscuro    1;30
+       Azul        0;34     Azul claro     1;34
+       Verde       0;32     Verde claro    1;32
+       Cyan        0;36     Cyan claro     1;36
+       Rojo        0;31     Rojo claro     1;31
+       Purpura     0;35     Purpura claro  1;35
+       Marron      0;33     Amarillo       1;33
+       Gris claro  0;37     blanco         1;37
+También se pueden poner colores de fondo, usando 44 para fondo azul, 41 para fondo rojo, etc. No hay colores de fondo 'negrita'; se pueden usar combinaciones, como texto rojo claro sobre fondo azul \[\033[44;1;31m\], aunque parece que funciona mejor poner los colores separadamente (es decir, \[\033[44m\]\[\033[1;31m\]). Otros códigos disponibles incluyen 4: subrayado, 5: parpadeante, 7: inverso y 8: oculto.
+
+Nota: mucha gente (yo incluido), tienen fuertes objeciones al uso del atributo �parpadeo�. Afortunadamente no funciona en ningún emulador de terminal que yo conozca - pero si que funciona en la consola. Y si alguien se preguntaba (como yo hice) ��para qué sirve el atributo oculto?�, yo he visto usarlo en un ejemplo de shell script (no en un prompt) que permitía introducir un password sin ser reflejado en la pantalla.
+
+Basado en el prompt elite2 del paquete bashprompt (que he modificado para funcionar mejor en una consola estándar, en lugar de con los tipos especiales de xterm necesarios para ver correctamente el original), este es un prompt que he usado mucho:
+
+  function elite
+  {
+
+  local GRAY="\[\033[1;30m\]"
+  local LIGHT_GRAY="\[\033[0;37m\]"
+  local CYAN="\[\033[0;36m\]"
+  local LIGHT_CYAN="\[\033[1;36m\]"
+
+  case $TERM in
+      xterm*)
+          local TITLEBAR='\[\033]0;\u@\h:\w\007\]'
+          ;;
+      *)
+          local TITLEBAR=""
+          ;;
+  esac
+
+  local GRAD1=$(tty|cut -d/ -f3)
+  PS1="$TITLEBAR\
+  $GRAY-$CYAN-$LIGHT_CYAN(\
+  $CYAN\u$GRAY@$CYAN\h\
+  $LIGHT_CYAN)$CYAN-$LIGHT_CYAN(\
+  $CYAN\#$GRAY/$CYAN$GRAD1\
+  $LIGHT_CYAN)$CYAN-$LIGHT_CYAN(\
+  $CYAN\$(date +%H%M)$GRAY/$CYAN\$(date +%d-%b-%y)\
+  $LIGHT_CYAN)$CYAN-$GRAY-\
+  $LIGHT_GRAY\n\
+  $GRAY-$CYAN-$LIGHT_CYAN(\
+  $CYAN\$$GRAY:$CYAN\w\
+  $LIGHT_CYAN)$CYAN-$GRAY-$LIGHT_GRAY "
+  PS2="$LIGHT_CYAN-$CYAN-$GRAY-$LIGHT_GRAY "
+  }
+Defino los colores como variables temporales del shell en favor de la legibilidad. Es más fácil trabajar así. La variable GRAD1 es una comprobación para determinar en qué terminal se está. Como la prueba para saber si se está en una xterm, solo es necesario llevarla a cabo una vez. El prompt es similar a esto, excepto el color
+
+       --(giles@nikola)-(75/ttyp7)-(1908/12-Oct-98)--
+       --($:~/tmp)--
+Para recordar qué colores hay disponibles, uso el siguiente script que saca todos los colores por pantalla:
+
+  #!/bin/bash
+  #
+  # Este fichero saca por pantalla un monton de codigos de color
+  # para demostrar que hay disponible. Cada linea es un color con
+  # fondo negro y gris, con el codigo en medio. Funciona sobre
+  # fondos blancos, negros y verdes (2 dic. 98)
+  #
+  echo "  Sobre gris claro:        Sobre negro:"
+  echo -e "\033[47m\033[1;37m  Blanco        \033[0m\
+   1;37m \
+  \033[40m\033[1;37m  Blanco        \033[0m"
+  echo -e "\033[47m\033[37m  Gris Claro    \033[0m\
+     37m \
+  \033[40m\033[37m  Gris Claro    \033[0m"
+  echo -e "\033[47m\033[1;30m  Gris          \033[0m\
+   1;30m \
+  \033[40m\033[1;30m  Gris          \033[0m"
+  echo -e "\033[47m\033[30m  Negro         \033[0m\
+     30m \
+  \033[40m\033[30m  Negro         \033[0m"
+  echo -e "\033[47m\033[31m  Rojo          \033[0m\
+     31m \
+  \033[40m\033[31m  Rojo          \033[0m"
+  echo -e "\033[47m\033[1;31m  Rojo Claro    \033[0m\
+   1;31m \
+  \033[40m\033[1;31m  Rojo Claro    \033[0m"
+  echo -e "\033[47m\033[32m  Verde         \033[0m\
+     32m \
+  \033[40m\033[32m  Verde         \033[0m"
+  echo -e "\033[47m\033[1;32m  Verde Claro   \033[0m\
+   1;32m \
+  \033[40m\033[1;32m  Verde Claro   \033[0m"
+  echo -e "\033[47m\033[33m  Marrón        \033[0m\
+     33m \
+  \033[40m\033[33m  Marron        \033[0m"
+  echo -e "\033[47m\033[1;33m  Amarillo      \033[0m\
+   1;33m \
+  \033[40m\033[1;33m  Amarillo      \033[0m"
+  echo -e "\033[47m\033[34m  Azul          \033[0m\
+     34m \
+  \033[40m\033[34m  Azul          \033[0m"
+  echo -e "\033[47m\033[1;34m  Azul Claro    \033[0m\
+   1;34m \
+  \033[40m\033[1;34m  Azul Claro    \033[0m"
+  echo -e "\033[47m\033[35m  Púrpura       \033[0m\
+     35m \
+  \033[40m\033[35m  Purpura       \033[0m"
+  echo -e "\033[47m\033[1;35m  Rosa          \033[0m\
+   1;35m \
+  \033[40m\033[1;35m  Rosa          \033[0m"
+  echo -e "\033[47m\033[36m  Cyan          \033[0m\
+     36m \
+  \033[40m\033[36m  Cyan          \033[0m"
+  echo -e "\033[47m\033[1;36m  Cyan Claro    \033[0m\
+   1;36m \
+  \033[40m\033[1;36m  Cyan Claro    \033[0m"
+5.2 Movimiento del cursor
+Las secuencias de escape ANSI permiten mover el cursor por la pantalla a voluntad. Esto es más útil para interfaces de usuario a pantalla completa generados por shell scripts, pero también se pueden usar en prompts. Las secuencias de escape de movimientos son las siguientes:
+
+       - Posicionar el cursor:
+         \033[<L>;<C>H
+         pone el cursor en la linea L, columna C.
+       - Mover el cursor arriba N lineas:
+         \033[<N>A
+       - Mover el cursor abajo N lineas:
+         \033[<N>B
+       - Mover el cursor hacia adelante N columnas:
+         \033[<N>C
+       - Mover el cursor hacia atras N columnas:
+         \033[<N>D
+       - Guardar la posicion del cursor:
+         \033[s
+       - Restaurar la posicion del cursor:
+         \033[u
+Los dos últimos códigos no están presentes en muchos emuladores de terminal. Los únicos que conozco que los soportan son xterm y nxterm, a pesar de que la mayoría de los emuladores de terminal están basados en el código de xterm. Por lo que yo sé, ni rxvt, kvt ni xiterm ni Eterm no soportan esto. La consola sí lo soporta.
+
+Pruebe a poner la siguiente línea de código en el prompt (está más claro lo que hace si el prompt está bastantes líneas más abajo que el tope superior de la terminal)
+
+ 
+echo -en "\033[7A\033[1;35m BASH \033[7B\033[6D" 
+Esto debería mover el cursor 7 líneas hacia arriba de la pantalla, escribir la palabra BASH, y volver a su sitio habitual en el prompt. Esto no es un prompt, es solo una demostración de movimiento del cursor por la pantalla, usando color para enfatizar lo que se ha hecho.
+
+Salve lo siguiente en un fichero llamado clock:
+
+N.del T.:
+para que funcione bien, he tenido que poner let prompt_x=$COLUMNS-7, en lugar de la línea original
+  #!/bin/bash
+
+  function prompt_command {
+  let prompt_x=$COLUMNS-5
+  }
+
+  PROMPT_COMMAND=prompt_command
+
+  function clock {
+  local       BLUE="\[\033[0;34m\]"
+  local        RED="\[\033[0;31m\]"
+  local  LIGHT_RED="\[\033[1;31m\]"
+  local      WHITE="\[\033[1;37m\]"
+  local  NO_COLOUR="\[\033[0m\]"
+  case $TERM in
+      xterm*)
+          TITLEBAR='\[\033]0;\u@\h:\w\007\]'
+          ;;
+      *)
+          TITLEBAR=""
+          ;;
+  esac
+
+  PS1="${TITLEBAR}\
+  \[\033[s\033[1;\$(echo -n \${prompt_x})H\]\
+  $BLUE[$LIGHT_RED\$(date +%H%M)$BLUE]\[\033[u\033[1A\]
+  $BLUE[$LIGHT_RED\u@\h:\w$BLUE]\
+  $WHITE\$$NO_COLOUR "
+  PS2='> '
+  PS4='+ '
+  }
+Este prompt es bastante sencillo, excepto por el hecho de que mantiene un reloj en la esquina superior derecha de la pantalla (incluso aunque se varíe de tamaño el terminal). Esto NO funcionará en los emuladores de terminal que he mencionado que no aceptan guardar y recuperar la posición del cursor. Si se intenta ejecutar este prompt en cualquiera de esos terminales, el reloj aparecerá correctamente, pero el prompt quedará encajado en la segunda línea del terminal.
+
+Véase la sección Prompt con Reloj Elegante e Inútil para un uso más extensivo de estos códigos.
+
+5.3 Movimiento del cursor con tput
+Como ocurre con muchas cosas en unix, hay más de una forma de conseguir los mismos objetivos. Una utilidad llamada tput puede también usarse para mover el cursor por la pantalla, o devolver información acerca del estado del terminal. tput es menos flexible que las secuencias de escape ANSI para el posicionamiento del cursor: sólo se puede mover el cursor a una posición absoluta, no se puede mover con relación a la posición actual. Yo no uso tput, así que no voy a explicarlo en detalle. Consulte la página del manual y sabrá tanto como yo de tput.
